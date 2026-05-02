@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form method="post" th:object="${link}">
+        <input type="text" th:field="*{Link}" placeholder="YourLink">
+    </form>
+    <div th:if="${link.shortLink}"> <p th:text="${link.shortLink}"> shortL</p></div>
+
+</body>
+</html>

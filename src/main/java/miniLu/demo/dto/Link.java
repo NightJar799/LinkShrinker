@@ -1,11 +1,13 @@
 package miniLu.demo.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Link {
-    private final Long id;
+    private Long id;
 
-    private final String Link;
-    private final String ShortLink;
+    private String link;
+    private String shortLink;
 }
