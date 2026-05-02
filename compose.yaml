@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: 'postgres:17'
+    environment:
+      - 'POSTGRES_DB=mini_lu'
+      - 'POSTGRES_PASSWORD=postgres'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '30432:5432'
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379:6379'
