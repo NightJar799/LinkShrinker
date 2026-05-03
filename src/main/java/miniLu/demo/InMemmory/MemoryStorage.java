@@ -5,19 +5,24 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Component
 public class MemoryStorage {
-    List<Link> list = new ArrayList<>();
+    Map<String,Link> list = new TreeMap<>();
 
-    public boolean addLink(Link link) {
-        return list.add(link);
+    public Link addLink(Link link) {
+        return list.put(link.getShortLink(), link);
     }
 
-    public List<Link> getList() {
+    public Map<String,Link> getList() {
         return list;
     }
     public Long getLenght() {
         return (long) list.size();
+    }
+    public String getBigLink(String shortLink) {
+        return list.get(shortLink).getLink();
     }
 }

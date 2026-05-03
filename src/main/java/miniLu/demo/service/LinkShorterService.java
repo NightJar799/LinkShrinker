@@ -1,9 +1,11 @@
 package miniLu.demo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import miniLu.demo.InMemmory.MemoryStorage;
 import miniLu.demo.dto.Link;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class LinkShorterService {
 
@@ -13,13 +15,30 @@ public class LinkShorterService {
         this.memoryStorage = memoryStorage;
     }
 
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final int BASE = 62;
+
     public Link ShortALink(Link link) {
         Link lastLink;
-        if (memoryStorage.getLenght() != 0) link.setId(memoryStorage.getList().getLast().getId()+1);
-        else link.setId((long)1);
-        link.setShortLink(String.valueOf(link.getId()));
+        if (memoryStorage.getLenght() != 0) link.setId((long) (memoryStorage.getList().size()+1));
+        else link.setId((long)1000000);
+
+        link.setFullShortLink(into62BitLink(link.getId()));
 
         memoryStorage.addLink(link);
+        log.info("shortLink - " + link.getShortLink());
         return link;
+    }
+
+    private String into62BitLink(Long id) {
+        if (id < 10) return String.valueOf(id);
+
+        StringBuilder sb = new StringBuilder();
+        while (id != 0) {
+            sb.append(ALPHABET.charAt((int) (id % BASE)));
+            id /= BASE;
+        }
+
+        return String.valueOf(sb);
     }
 }

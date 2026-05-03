@@ -10,4 +10,6 @@ public class Link {
 
     private String link;
     private String shortLink;
+
+    public void setFullShortLink(String linkBody) {this.shortLink = linkBody;}
 }

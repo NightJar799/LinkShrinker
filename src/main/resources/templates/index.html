@@ -9,7 +9,7 @@
     <form method="post" th:object="${link}">
         <input type="text" th:field="*{Link}" placeholder="YourLink">
     </form>
-    <div th:if="${link.shortLink}"> <p th:text="${link.shortLink}"> shortL</p></div>
+    <div th:if="${link.shortLink}"> <a th:href="@{${link.shortLink}}">UrSLink</a></div>
 
 </body>
 </html>
