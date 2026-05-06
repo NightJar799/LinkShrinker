@@ -20,13 +20,17 @@ public class LinkShorterService {
 
     public Link ShortALink(Link link) {
         Link lastLink;
-        if (memoryStorage.getLenght() != 0) link.setId((long) (memoryStorage.getList().size()+1));
+        if (memoryStorage.getLenght() != 0) link.setId((long) (memoryStorage.getList().size()+1000000));
         else link.setId((long)1000000);
 
-        link.setFullShortLink(into62BitLink(link.getId()));
+        String link62 = into62BitLink(link.getId());
 
-        memoryStorage.addLink(link);
+        link.setFullShortLink("link/" + link62);
+
+        memoryStorage.addLink(link, link62);
         log.info("shortLink - " + link.getShortLink());
+        log.info("FullLink - " + link.getLink());
+        log.info("Id - " + link.getId());
         return link;
     }
 
