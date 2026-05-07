@@ -24,7 +24,7 @@ public class LinkShorterService {
 
         String link62 = into62BitLink(link.getId());
 
-        link.setFullShortLink("link/" + link62);
+        link.setFullShortLink(link62);
 
         memoryStorage.addLink(link, link62);
         log.info("shortLink - " + link.getShortLink());
