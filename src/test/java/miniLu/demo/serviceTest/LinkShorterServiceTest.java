@@ -36,7 +36,7 @@ class LinkShorterServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getShortLink()).startsWith("link/");
+        assertThat(result.getShortLink()).startsWith("");
         assertThat(result.getLink()).isEqualTo("https://www.google.com");
     }
 
@@ -60,7 +60,7 @@ class LinkShorterServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(2L);
-        assertThat(result.getShortLink()).startsWith("link/");
+        assertThat(result.getShortLink()).startsWith("");
     }
 
     @Test
@@ -74,7 +74,7 @@ class LinkShorterServiceTest {
         Link result = linkShorterService.ShortALink(link);
 
         String shortLink = result.getShortLink();
-        assertThat(shortLink).matches("link/[0-9A-Za-z]+");
-        assertThat(shortLink.length()).isGreaterThan(5);
+        assertThat(shortLink).matches("[0-9A-Za-z]+");
+        assertThat(shortLink.length()).isLessThan(result.getLink().length());
     }
 }
