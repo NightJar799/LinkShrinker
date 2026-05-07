@@ -19,9 +19,8 @@ public class LinkShorterService {
     private static final int BASE = 62;
 
     public Link ShortALink(Link link) {
-        Link lastLink;
-        if (memoryStorage.getLenght() != 0) link.setId((long) (memoryStorage.getList().size()+1000000));
-        else link.setId((long)1000000);
+        if (memoryStorage.getLenght() != 0) link.setId((long) (memoryStorage.getList().size()+1));
+        else link.setId((long)1);
 
         String link62 = into62BitLink(link.getId());
 
