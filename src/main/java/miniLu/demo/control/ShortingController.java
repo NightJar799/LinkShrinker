@@ -4,9 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import miniLu.demo.InMemmory.MemoryStorage;
 import miniLu.demo.dto.Link;
+import miniLu.demo.service.AnalyticsBuffer;
 import miniLu.demo.service.LinkShorterService;
-
-import java.time.Instant;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,10 +18,14 @@ import org.springframework.web.bind.annotation.*;
 public class ShortingController {
 
     LinkShorterService linkShorterService;
+    AnalyticsBuffer analyticsBuffer;
     MemoryStorage memoryStorage;
 
-    ShortingController(LinkShorterService linkShorterService, MemoryStorage memoryStorage) {
+
+    ShortingController(LinkShorterService linkShorterService, MemoryStorage memoryStorage, 
+                        AnalyticsBuffer analyticsBuffer) {
         this.linkShorterService = linkShorterService;
+        this.analyticsBuffer = analyticsBuffer;
         this.memoryStorage = memoryStorage;
     }
 
@@ -49,12 +52,9 @@ public class ShortingController {
     @GetMapping("/{slink}")
     public String redirectToLink(@PathVariable("slink") String shortLink,
                                  HttpServletRequest httpServletRequest) {
-        log.info("\nredirecting to a new page\n");
-        log.info(httpServletRequest.getRemoteAddr());
-        log.info(httpServletRequest.getHeader("User-Agent"));
-        log.info(httpServletRequest.getHeader("Referer"));
-        log.info(Instant.now().toString());
-        log.info(memoryStorage.getMap().toString());
+        log.info("\nRedirect\n");
+        analyticsBuffer.add(shortLink, httpServletRequest);
+        memoryStorage.printMetrics();
         String fullLink = memoryStorage.getBigLink(shortLink);
         log.info("FillLink - " + fullLink);
         System.out.println(memoryStorage.getLenght());

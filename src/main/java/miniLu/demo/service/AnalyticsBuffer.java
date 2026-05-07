@@ -1,19 +1,30 @@
 package miniLu.demo.service;
 
 import java.time.Instant;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import miniLu.demo.InMemmory.MemoryStorage;
 import miniLu.demo.dto.Analytics;
 
+@Slf4j
 @Component
 public class AnalyticsBuffer {
-    private final ConcurrentLinkedQueue<Analytics> buffer = 
-        new ConcurrentLinkedQueue<>();
+    MemoryStorage memoryStorage;
+    private final BlockingQueue<Analytics> buffer = 
+        new LinkedBlockingQueue<>(10000);
+
+    public AnalyticsBuffer(MemoryStorage memoryStorage) {
+        this.memoryStorage = memoryStorage;
+    }
     
     public void add(String shortCode, HttpServletRequest request) {
         Analytics event = Analytics.builder()
@@ -29,7 +40,16 @@ public class AnalyticsBuffer {
     
     @Scheduled(fixedDelay = 3000)
     public void flush() {
-       
+
+        if (buffer.isEmpty()) return;
+
+        List<Analytics> batch = new ArrayList<>();
+        int drained = buffer.drainTo(batch, 1000);
+
+        if (batch.isEmpty()) return;
+        memoryStorage.putNewMetrics(batch);
+
+        log.info("drained - " + drained);
     }
     
     @PreDestroy
