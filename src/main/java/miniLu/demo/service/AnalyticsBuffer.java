@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 
@@ -52,7 +51,7 @@ public class AnalyticsBuffer {
         String agentString = request.getHeader("User-Agent");
         UserAgent parsed = userAgentAnalyzer.parse(agentString);
         
-        String ip = request.getRemoteAddr();;
+        String ip = request.getRemoteAddr().equals("127.0.0.1") ? "8.8.8.8" : request.getRemoteAddr();
         
         CityResponse response = dReader.city(InetAddress.getByName(ip));
         
@@ -121,20 +120,6 @@ private Analytics buildBasicAnalytics(String shortCode, HttpServletRequest reque
         .shortLink(shortCode)
         .build();
 }
-
-// private String getClientIp(HttpServletRequest request) {
-//     String xForwardedFor = request.getHeader("X-Forwarded-For");
-//     if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-//         return xForwardedFor.split(",")[0].trim();
-//     }
-    
-//     String xRealIp = request.getHeader("X-Real-IP");
-//     if (xRealIp != null && !xRealIp.isEmpty()) {
-//         return xRealIp;
-//     }
-    
-//     return request.getRemoteAddr();
-// }
     
     @Scheduled(fixedDelay = 3000)
     public void flush() {

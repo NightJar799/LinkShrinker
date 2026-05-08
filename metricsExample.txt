@@ -1,0 +1,1 @@
+Analytics(ip=8.8.8.8, userAgent=Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0, referer=http://localhost:8080/, timeStamp=2026-05-08T16:22:20.815731583Z, shortLink=1, country=United States, deviceType=null, city=null, device=Desktop, agent=Browser, os=Desktop)]
