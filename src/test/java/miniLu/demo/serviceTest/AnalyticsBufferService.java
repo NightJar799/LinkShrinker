@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import miniLu.demo.InMemmory.MemoryStorage;
@@ -34,7 +37,7 @@ public class AnalyticsBufferService {
     private AnalyticsBuffer analyticsBuffer;
 
     @Test
-    void flushTest_WhenBufferHasEvents_ShouldDrainAndStoreThem() {
+    void flushTest_WhenBufferHasEvents_ShouldDrainAndStoreThem() throws IOException, GeoIp2Exception {
         String shortCode = "123456";
         when(httpServletRequest.getRemoteAddr()).thenReturn("192.168.1.1");
         when(httpServletRequest.getHeader("User-Agent")).thenReturn("Mozilla/5.0");
@@ -64,7 +67,7 @@ public class AnalyticsBufferService {
     }
 
     @Test
-    void flushRemainingTest_ShouldCallFlush() {
+    void flushRemainingTest_ShouldCallFlush() throws IOException, GeoIp2Exception {
         String shortCode = "abcdef";
         when(httpServletRequest.getRemoteAddr()).thenReturn("10.0.0.1");
         when(httpServletRequest.getHeader("User-Agent")).thenReturn("Chrome");

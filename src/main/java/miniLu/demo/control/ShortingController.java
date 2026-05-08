@@ -7,9 +7,13 @@ import miniLu.demo.dto.Link;
 import miniLu.demo.service.AnalyticsBuffer;
 import miniLu.demo.service.LinkShorterService;
 
+import java.io.IOException;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 
 @Slf4j
 @Controller
@@ -51,7 +55,7 @@ public class ShortingController {
 
     @GetMapping("/{slink}")
     public String redirectToLink(@PathVariable("slink") String shortLink,
-                                 HttpServletRequest httpServletRequest) {
+                                 HttpServletRequest httpServletRequest) throws IOException, GeoIp2Exception {
         log.info("\nRedirect\n");
         analyticsBuffer.add(shortLink, httpServletRequest);
         memoryStorage.printMetrics();

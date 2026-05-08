@@ -17,4 +17,8 @@ public class Analytics {
     String shortLink;
     String country;
     String deviceType;
+    String city;
+    String device;
+    String agent;
+    String os;
 }
