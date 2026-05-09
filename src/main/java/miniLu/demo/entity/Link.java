@@ -1,4 +1,4 @@
-package miniLu.demo.Entity;
+package miniLu.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
