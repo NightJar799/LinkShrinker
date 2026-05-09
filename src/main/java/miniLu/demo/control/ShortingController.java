@@ -54,14 +54,24 @@ public class ShortingController {
     }
 
     @GetMapping("/{slink}")
-    public String redirectToLink(@PathVariable("slink") String shortLink,
-                                 HttpServletRequest httpServletRequest) throws IOException, GeoIp2Exception {
-        log.info("\nRedirect\n");
-        analyticsBuffer.add(shortLink, httpServletRequest);
-        memoryStorage.printMetrics();
-        String fullLink = memoryStorage.getBigLink(shortLink);
-        log.info("FillLink - " + fullLink);
-        System.out.println(memoryStorage.getLenght());
-        return"redirect:" + fullLink;
+public String redirectToLink(@PathVariable("slink") String shortLink,
+                             HttpServletRequest httpServletRequest) throws IOException, GeoIp2Exception {
+    log.info("\nRedirect\n");
+    if ("favicon.ico".equals(shortLink)) {
+        return "index";
     }
+    analyticsBuffer.add(shortLink, httpServletRequest);
+    memoryStorage.printMetrics();
+    if (memoryStorage.getList().get(shortLink) == null) {
+        log.warn("Short link not found: {}", shortLink);
+        return "redirect:/";
+    }
+    String fullLink = memoryStorage.getBigLink(shortLink);
+    log.info("FullLink - " + fullLink);
+    System.out.println(memoryStorage.getLenght());
+    if (!fullLink.startsWith("http://") && !fullLink.startsWith("https://")) {
+        fullLink = "https://" + fullLink;
+    }
+    return "redirect:" + fullLink;
+}
 }

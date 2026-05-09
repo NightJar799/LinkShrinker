@@ -1,6 +1,7 @@
-CREATE DATABASE mini_lu;
+-- DROP DATABASE IF EXISTS mini_lu;
+-- CREATE DATABASE mini_lu;
 
-\c mini_lu;
+-- \c mini_lu;
 
 CREATE SCHEMA IF NOT EXISTS mil;
 
@@ -9,8 +10,8 @@ SET search_path TO mil;
 CREATE TABLE mil.users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password BYTEA NOT NULL,  
-    name VARCHAR(100) NOT NULL,
+    password VARCHAR(75) NOT NULL,  
+    name VARCHAR(100) NOT NULL
 );
 
 
