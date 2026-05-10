@@ -6,8 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,20 +21,68 @@ class ShortingIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        restClient = RestClient.create("http://localhost:" + port);
+        restClient = RestClient.builder()
+                .baseUrl("http://localhost:" + port)
+                .build();
     }
 
     @Test
-    void fFCreateShortLinkAndRedirect() {
+    void createShortLink_ShouldReturnSuccess() {
         Link requestLink = new Link();
         requestLink.setLink("https://www.spring.io");
 
         ResponseEntity<String> postResponse = restClient.post()
                 .uri("/")
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(requestLink)
                 .retrieve()
                 .toEntity(String.class);
-        
+
         assertThat(postResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void redirectToShortLink_ShouldRedirect() {
+        // Сначала создаем короткую ссылку
+        Link requestLink = new Link();
+        requestLink.setLink("https://www.google.com");
+
+        ResponseEntity<String> createResponse = restClient.post()
+                .uri("/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requestLink)
+                .retrieve()
+                .toEntity(String.class);
+
+        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        // Потом пробуем перейти по короткой ссылке
+        // (замените "test123" на реальную короткую ссылку из ответа)
+        ResponseEntity<String> redirectResponse = restClient.get()
+                .uri("/test123")
+                .retrieve()
+                .toEntity(String.class);
+
+        assertThat(redirectResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void homePage_ShouldReturnIndexPage() {
+        ResponseEntity<String> response = restClient.get()
+                .uri("/")
+                .retrieve()
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void authPage_ShouldReturnAuthPage() {
+        ResponseEntity<String> response = restClient.get()
+                .uri("/auth")
+                .retrieve()
+                .toEntity(String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }

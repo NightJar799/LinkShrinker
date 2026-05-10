@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Link Metrics - Detail</title>
+</head>
+<body>
+    <div>
+        <a href="/">Home</a> |
+        <a href="/metrics">Back to Links</a> |
+        <a href="/logout">Logout</a>
+        <p>Logged in as: <span th:text="${user.email}">user@email.com</span></p>
+    </div>
+    
+    <h1>Link Metrics</h1>
+    
+    <div style="background-color: #f0f0f0; padding: 10px; margin-bottom: 20px;">
+        <p><strong>Original URL:</strong> <a th:href="${link.link}" target="_blank" th:text="${link.link}">url</a></p>
+        <p><strong>Short Link:</strong> <span th:text="${link.shortLink}">short</span></p>
+        <p><strong>Total Clicks:</strong> <span th:text="${totalMetrics}">0</span></p>
+    </div>
+    
+    <div th:if="${totalMetrics == 0}">
+        <p>No metrics available for this link yet.</p>
+    </div>
+    
+    <div th:if="${totalMetrics > 0}">
+        
+        <!-- Countries -->
+        <h2>Countries</h2>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Country</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="stat : ${countryStats}">
+                    <td th:text="${stat.name}">Country</td>
+                    <td th:text="${stat.count}">0</td>
+                    <td th:text="${stat.percentage}">0%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <br/>
+        
+        <!-- Cities -->
+        <h2>Cities</h2>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>City</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="stat : ${cityStats}">
+                    <td th:text="${stat.name}">City</td>
+                    <td th:text="${stat.count}">0</td>
+                    <td th:text="${stat.percentage}">0%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <br/>
+        
+        <!-- Devices -->
+        <h2>Devices</h2>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Device Type</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="stat : ${deviceStats}">
+                    <td th:text="${stat.name}">Device</td>
+                    <td th:text="${stat.count}">0</td>
+                    <td th:text="${stat.percentage}">0%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <br/>
+        
+        <!-- Operating Systems -->
+        <h2>Operating Systems</h2>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>OS</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="stat : ${osStats}">
+                    <td th:text="${stat.name}">OS</td>
+                    <td th:text="${stat.count}">0</td>
+                    <td th:text="${stat.percentage}">0%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <br/>
+        
+        <!-- Referers -->
+        <h2>Referers</h2>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Referer</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="stat : ${refererStats}">
+                    <td>
+                        <span th:if="${stat.name == 'Direct/Unknown'}" th:text="${stat.name}">Direct</span>
+                        <a th:if="${stat.name != 'Direct/Unknown'}" th:href="${stat.name}" target="_blank" th:text="${stat.name}">referer</a>
+                    </td>
+                    <td th:text="${stat.count}">0</td>
+                    <td th:text="${stat.percentage}">0%</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <br/>
+        
+        <!-- Timestamps -->
+        <h2>Click Timestamps</h2>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="timestamp, iterStat : ${timestamps}">
+                    <td th:text="${iterStat.index + 1}">1</td>
+                    <td th:text="${timestamp}">2024-01-01</td>
+                </tr>
+            </tbody>
+        </table>
+        
+    </div>
+    
+    <br/>
+    
+    <form th:action="@{/metrics}" method="get" style="display: inline;">
+        <button type="submit">Back to Links List</button>
+    </form>
+    
+</body>
+</html>

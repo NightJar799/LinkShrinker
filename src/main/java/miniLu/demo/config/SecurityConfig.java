@@ -1,10 +1,5 @@
 package miniLu.demo.config;
 
-// import com.example.gardener.Entities.User;
-// import com.example.gardener.Repository.UserRepository;
-// import com.example.gardener.service.UserService;
-
-import lombok.extern.slf4j.Slf4j;
 import miniLu.demo.Repository.UserRepository;
 import miniLu.demo.entity.User;
 
@@ -13,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +19,6 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.Optional;
 
-@Slf4j
 @Configuration
 public class SecurityConfig {
 

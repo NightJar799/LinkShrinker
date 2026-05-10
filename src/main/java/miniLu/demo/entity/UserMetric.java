@@ -6,9 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "user_metrics", schema = "mil")
 @Data

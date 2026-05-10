@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Links - Metrics</title>
+</head>
+<body>
+    <h1>Your Shortened Links</h1>
+    
+    <div>
+        <p>Logged in as: <span th:text="${user.email}">user@email.com</span></p>
+        <a href="/">Back to Home</a>
+        <a href="/logout">Logout</a>
+    </div>
+    
+    <br/>
+    
+    <div th:if="${links == null or links.isEmpty()}">
+        <p>You haven't created any links yet.</p>
+        <a href="/">Create a link</a>
+    </div>
+    
+    <div th:if="${links != null and !links.isEmpty()}">
+        <h2>Click on a link to view its metrics:</h2>
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Original URL</th>
+                    <th>Short Link</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="link : ${links}">
+                    <td th:text="${link.id}">1</td>
+                    <td>
+                        <a th:href="${link.link}" target="_blank" th:text="${link.link}">original url</a>
+                    </td>
+                    <td th:text="${link.shortLink}">short</td>
+                    <td>
+                        <form th:action="@{/metrics/detail}" method="post" style="display: inline;">
+                            <input type="hidden" name="linkId" th:value="${link.id}">
+                            <button type="submit">View Metrics</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LinkShorterService {
 
-    LinkRepository linkRepository;
+    private final LinkRepository linkRepository;
 
     LinkShorterService(LinkRepository linkRepository){
         this.linkRepository = linkRepository;

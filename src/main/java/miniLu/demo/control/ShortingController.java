@@ -22,8 +22,8 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 @SessionAttributes("link")
 public class ShortingController {
 
-    LinkShorterService linkShorterService;
-    AnalyticsBuffer analyticsBuffer;
+    private final LinkShorterService linkShorterService;
+    private final AnalyticsBuffer analyticsBuffer;
 
 
     ShortingController(LinkShorterService linkShorterService, AnalyticsBuffer analyticsBuffer) {
