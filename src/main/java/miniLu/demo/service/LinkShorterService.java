@@ -1,35 +1,38 @@
 package miniLu.demo.service;
 
 import lombok.extern.slf4j.Slf4j;
-import miniLu.demo.InMemmory.MemoryStorage;
+import miniLu.demo.Repository.LinkRepository;
 import miniLu.demo.dto.Link;
+import miniLu.demo.entity.User;
+
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class LinkShorterService {
 
-    MemoryStorage memoryStorage;
+    LinkRepository linkRepository;
 
-    LinkShorterService(MemoryStorage memoryStorage){
-        this.memoryStorage = memoryStorage;
+    LinkShorterService(LinkRepository linkRepository){
+        this.linkRepository = linkRepository;
     }
 
     private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int BASE = 62;
 
-    public Link ShortALink(Link link) {
-        if (memoryStorage.getLenght() != 0) link.setId((long) (memoryStorage.getList().size()+1));
-        else link.setId((long)1);
+    public Link ShortALink(Link link, User user) {
+        String link62 = into62BitLink(linkRepository.count());
+        miniLu.demo.entity.Link newLink = new miniLu.demo.entity.Link();
+        newLink.setLink(link.getLink());
+        newLink.setShortLink(link62);
+        newLink.setUserId(user.getId());
+        linkRepository.save(newLink);
 
-        String link62 = into62BitLink(link.getId());
+        log.info("shortLink - " + newLink.getShortLink());
+        log.info("FullLink - " + newLink.getLink());
+        log.info("Id - " + newLink.getId());
 
-        link.setFullShortLink(link62);
-
-        memoryStorage.addLink(link, link62);
-        log.info("shortLink - " + link.getShortLink());
-        log.info("FullLink - " + link.getLink());
-        log.info("Id - " + link.getId());
+        link.setShortLink(link62);
         return link;
     }
 

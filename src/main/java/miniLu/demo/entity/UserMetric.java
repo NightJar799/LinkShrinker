@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserMetric {
     
     @Id
@@ -39,9 +42,6 @@ public class UserMetric {
     @Column(name = "country", length = 100)
     private String country;
     
-    @Column(name = "device_type", length = 50)
-    private String deviceType;
-    
     @Column(name = "city", length = 100)
     private String city;
     
@@ -53,10 +53,6 @@ public class UserMetric {
     
     @Column(name = "os", length = 100)
     private String os;
-    
-    @Column(name = "created_at")
-    @CreationTimestamp
-    private LocalDateTime createdAt;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "link_id", insertable = false, updatable = false)

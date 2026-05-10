@@ -16,8 +16,10 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import miniLu.demo.InMemmory.MemoryStorage;
+import miniLu.demo.Repository.LinkRepository;
+import miniLu.demo.Repository.UserMetricRepository;
 import miniLu.demo.dto.Analytics;
+import miniLu.demo.entity.UserMetric;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 
@@ -27,23 +29,29 @@ import com.maxmind.geoip2.model.CityResponse;
 @Slf4j
 @Component
 public class AnalyticsBuffer {
-    MemoryStorage memoryStorage;
+    UserMetricRepository userMetricRepository;
+    LinkRepository linkRepository;
     UserAgentAnalyzer userAgentAnalyzer;
-    private final BlockingQueue<Analytics> buffer = new LinkedBlockingQueue<>(10000);
+    private final BlockingQueue<UserMetric> buffer = new LinkedBlockingQueue<>(10000);
     private DatabaseReader geoIpReader;
 
-    public AnalyticsBuffer(MemoryStorage memoryStorage) {
-        this.memoryStorage = memoryStorage;
+    public AnalyticsBuffer(UserMetricRepository userMetricRepository, LinkRepository linkRepository) {
+        this.userMetricRepository = userMetricRepository;
+        this.linkRepository = linkRepository;
         this.userAgentAnalyzer = UserAgentAnalyzer.newBuilder().build();
     }
+
+    public String getFullLink(String shortCode) {
+        return linkRepository.findByShortLink(shortCode).get().getLink();
+    }
     
-    public void add(String shortCode, HttpServletRequest request) {
+    public void add(String shortCode,HttpServletRequest request) {
     try {
         DatabaseReader dReader = getDatabaseReader();
         
         if (dReader == null) {
             log.warn("GeoIP database not available - skipping geolocation");
-            Analytics event = buildBasicAnalytics(shortCode, request);
+            UserMetric event = buildBasicAnalytics(shortCode, request);
             buffer.add(event);
             return;
         }
@@ -55,9 +63,9 @@ public class AnalyticsBuffer {
         
         CityResponse response = dReader.city(InetAddress.getByName(ip));
         
-        Analytics event = Analytics.builder()
-            .ip(ip)
+        UserMetric event = UserMetric.builder()
             .userAgent(agentString)
+            .linkId(linkRepository.findByShortLink(shortCode).get().getId())
             .device(parsed.getValue("DeviceClass"))
             .agent(parsed.getValue("AgentClass"))
             .os(parsed.getValue("OperatingSystemClass"))
@@ -72,7 +80,7 @@ public class AnalyticsBuffer {
         
     } catch (Exception e) {
         log.error("Failed to process analytics: {}", e.getMessage(), e);
-        Analytics event = buildBasicAnalytics(shortCode, request);
+        UserMetric event = buildBasicAnalytics(shortCode, request);
         buffer.add(event);
     }
 }
@@ -105,12 +113,11 @@ private DatabaseReader getDatabaseReader() {
     return geoIpReader;
 }
 
-private Analytics buildBasicAnalytics(String shortCode, HttpServletRequest request) {
+private UserMetric buildBasicAnalytics(String shortCode, HttpServletRequest request) {
     String agentString = request.getHeader("User-Agent");
     UserAgent parsed = userAgentAnalyzer.parse(agentString);
     
-    return Analytics.builder()
-        .ip(request.getRemoteAddr())
+    return UserMetric.builder()
         .userAgent(agentString)
         .device(parsed.getValue("DeviceClass"))
         .agent(parsed.getValue("AgentClass"))
@@ -126,11 +133,11 @@ private Analytics buildBasicAnalytics(String shortCode, HttpServletRequest reque
 
         if (buffer.isEmpty()) return;
 
-        List<Analytics> batch = new ArrayList<>();
+        List<UserMetric> batch = new ArrayList<>();
         int drained = buffer.drainTo(batch, 1000);
 
         if (batch.isEmpty()) return;
-        memoryStorage.putNewMetrics(batch);
+        userMetricRepository.saveAll(batch);
 
         log.info("drained - " + drained);
     }

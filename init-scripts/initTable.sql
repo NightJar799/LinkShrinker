@@ -32,11 +32,9 @@ CREATE TABLE mil.user_metrics (
     time_stamp VARCHAR(50),
     short_link VARCHAR(50),
     country VARCHAR(100),
-    device_type VARCHAR(50),
     city VARCHAR(100),
     device VARCHAR(100),
     agent VARCHAR(400),
     os VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_link_metrics FOREIGN KEY (link_id) REFERENCES mil.links(id) ON DELETE CASCADE
 );

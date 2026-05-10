@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Link {
     private Long id;
-
     private String link;
     private String shortLink;
-
-    public void setFullShortLink(String linkBody) {this.shortLink = linkBody;}
 }
