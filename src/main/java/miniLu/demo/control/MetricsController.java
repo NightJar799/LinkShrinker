@@ -3,7 +3,6 @@ package miniLu.demo.control;
 import lombok.extern.slf4j.Slf4j;
 import miniLu.demo.dto.LinkDTO;
 import miniLu.demo.dto.MetricsDTO;
-import miniLu.demo.dto.UserDto;
 import miniLu.demo.entity.User;
 import miniLu.demo.service.LinkService;
 import miniLu.demo.service.MetricsService;

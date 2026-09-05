@@ -3,7 +3,6 @@ package miniLu.demo.control;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import miniLu.demo.dto.LinkDTO;
-import miniLu.demo.dto.UserDto;
 import miniLu.demo.entity.User;
 import miniLu.demo.service.AnalyticsBuffer;
 import miniLu.demo.service.LinkShorterService;

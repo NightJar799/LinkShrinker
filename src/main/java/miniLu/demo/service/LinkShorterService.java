@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import miniLu.demo.Repository.LinkRepository;
 import miniLu.demo.Repository.UserRepository;
 import miniLu.demo.dto.LinkDTO;
-import miniLu.demo.dto.UserDto;
 
 import org.springframework.stereotype.Service;
 
