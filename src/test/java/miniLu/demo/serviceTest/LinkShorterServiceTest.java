@@ -1,7 +1,8 @@
 package miniLu.demo.serviceTest;
 
 import miniLu.demo.Repository.LinkRepository;
-import miniLu.demo.dto.Link;
+import miniLu.demo.dto.LinkDTO;
+import miniLu.demo.dto.UserDto;
 import miniLu.demo.entity.User;
 import miniLu.demo.service.LinkShorterService;
 import org.junit.jupiter.api.Test;
@@ -33,14 +34,14 @@ class LinkShorterServiceTest {
 
         when(linkRepository.save(any(miniLu.demo.entity.Link.class))).thenReturn(entityLink);
 
-        Link link = new Link();
+        LinkDTO link = new LinkDTO();
         link.setLink("https://www.google.com");
 
-        User user = new User();
-        user.setId(1L);
+        UserDto user = new UserDto();
+//        user.setId(1L);
         user.setEmail("test@example.com");
 
-        Link result = linkShorterService.ShortALink(link, user);
+        LinkDTO result = linkShorterService.ShortALink(link, user.getEmail());
 
         assertThat(result).isNotNull();
         assertThat(result.getShortLink()).isNotNull();
@@ -66,17 +67,17 @@ class LinkShorterServiceTest {
                 .thenReturn(entityLink1)
                 .thenReturn(entityLink2);
 
-        User user = new User();
-        user.setId(1L);
+        UserDto user = new UserDto();
+//        user.setId(1L);
 
-        Link link1 = new Link();
+        LinkDTO link1 = new LinkDTO();
         link1.setLink("https://www.github.com");
 
-        Link link2 = new Link();
+        LinkDTO link2 = new LinkDTO();
         link2.setLink("https://www.stackoverflow.com");
 
-        Link result1 = linkShorterService.ShortALink(link1, user);
-        Link result2 = linkShorterService.ShortALink(link2, user);
+        LinkDTO result1 = linkShorterService.ShortALink(link1, user.getEmail());
+        LinkDTO result2 = linkShorterService.ShortALink(link2, user.getEmail());
 
         assertThat(result1.getShortLink()).isNotNull();
         assertThat(result2.getShortLink()).isNotNull();
@@ -94,14 +95,14 @@ class LinkShorterServiceTest {
 
         when(linkRepository.save(any(miniLu.demo.entity.Link.class))).thenReturn(entityLink);
 
-        Link link = new Link();
+        LinkDTO link = new LinkDTO();
         link.setLink("https://www.example.com");
 
-        User user = new User();
-        user.setId(2L);
+        UserDto user = new UserDto();
+//        user.setId(2L);
         user.setEmail("user2@example.com");
 
-        Link result = linkShorterService.ShortALink(link, user);
+        LinkDTO result = linkShorterService.ShortALink(link, user.getEmail());
 
         assertThat(result).isNotNull();
         assertThat(result.getShortLink()).isEqualTo("0");

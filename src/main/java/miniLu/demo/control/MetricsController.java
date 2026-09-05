@@ -1,11 +1,12 @@
 package miniLu.demo.control;
 
 import lombok.extern.slf4j.Slf4j;
-import miniLu.demo.Repository.LinkRepository;
-import miniLu.demo.Repository.UserMetricRepository;
-import miniLu.demo.entity.Link;
+import miniLu.demo.dto.LinkDTO;
+import miniLu.demo.dto.MetricsDTO;
+import miniLu.demo.dto.UserDto;
 import miniLu.demo.entity.User;
-import miniLu.demo.entity.UserMetric;
+import miniLu.demo.service.LinkService;
+import miniLu.demo.service.MetricsService;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -23,12 +24,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/metrics")
 public class MetricsController {
 
-    private final LinkRepository linkRepository;
-    private final UserMetricRepository userMetricRepository;
+    private final MetricsService metricsService;
+    private final LinkService linkService;
 
-    public MetricsController(LinkRepository linkRepository, UserMetricRepository userMetricRepository) {
-        this.linkRepository = linkRepository;
-        this.userMetricRepository = userMetricRepository;
+    public MetricsController(MetricsService metricsService, LinkService linkService) {
+        this.metricsService = metricsService;
+        this.linkService = linkService;
     }
 
     @GetMapping
@@ -37,7 +38,8 @@ public class MetricsController {
             return "redirect:/auth";
         }
         
-        List<Link> userLinks = linkRepository.findByUserId(user.getId());
+        List<LinkDTO> userLinks = linkService.findAllUsersLinksByEmail(user.getEmail());
+        // linkRepository.findByUserId(user.getId());
         model.addAttribute("user", user);
         model.addAttribute("links", userLinks);
         
@@ -45,86 +47,46 @@ public class MetricsController {
     }
 
     @PostMapping("/detail")
-    public String showLinkMetrics(@RequestParam("linkId") Long linkId, 
+    public String showLinkMetrics(@RequestParam("shortLink") String shortLink, 
                                   Model model, 
                                   @AuthenticationPrincipal User user) {
         if (user == null) {
             return "redirect:/auth";
         }
 
-        Optional<Link> linkOpt = linkRepository.findById(linkId);
-        if (linkOpt.isEmpty() || !linkOpt.get().getUserId().equals(user.getId())) {
+        LinkDTO link = linkService.getLinkByID(shortLink);
+        if (link == null || linkService.isLinkOwnByUser(user.getEmail(), shortLink)) {
             return "redirect:/metrics";
         }
 
-        Link link = linkOpt.get();
-        List<UserMetric> metrics = userMetricRepository.findByLinkId(linkId);
+        //List<UserMetric> metrics = userMetricRepository.findByLinkId(linkId);
+        List<MetricsDTO> metrics = metricsService.getAllMetricsByLinkId(shortLink);
 
-        // Calculate statistics
-        Map<String, Long> countryCount = calculatePercentages(metrics.stream()
-                .map(m -> m.getCountry() != null ? m.getCountry() : "Unknown")
-                .collect(Collectors.toList()));
+        Map<String, Long> countryCount = metricsService.countCountries(metrics);
         
-        Map<String, Long> deviceCount = calculatePercentages(metrics.stream()
-                .map(m -> m.getDevice() != null ? m.getDevice() : "Unknown")
-                .collect(Collectors.toList()));
+        Map<String, Long> deviceCount = metricsService.countDevices(metrics);
         
-        Map<String, Long> osCount = calculatePercentages(metrics.stream()
-                .map(m -> m.getOs() != null ? m.getOs() : "Unknown")
-                .collect(Collectors.toList()));
+        Map<String, Long> osCount = metricsService.countOs(metrics);
         
-        Map<String, Long> cityCount = calculatePercentages(metrics.stream()
-                .map(m -> m.getCity() != null ? m.getCity() : "Unknown")
-                .collect(Collectors.toList()));
+        Map<String, Long> cityCount = metricsService.countCities(metrics);;
         
-        Map<String, Long> refererCount = calculatePercentages(metrics.stream()
-                .map(m -> m.getReferer() != null && !m.getReferer().isEmpty() ? m.getReferer() : "Direct/Unknown")
-                .collect(Collectors.toList()));
+        Map<String, Long> refererCount = metricsService.countReferers(metrics);;
 
         int totalMetrics = metrics.size();
 
-        // Convert to percentage maps
         model.addAttribute("link", link);
         model.addAttribute("totalMetrics", totalMetrics);
-        model.addAttribute("countryStats", convertToPercentageList(countryCount, totalMetrics));
-        model.addAttribute("deviceStats", convertToPercentageList(deviceCount, totalMetrics));
-        model.addAttribute("osStats", convertToPercentageList(osCount, totalMetrics));
-        model.addAttribute("cityStats", convertToPercentageList(cityCount, totalMetrics));
-        model.addAttribute("refererStats", convertToPercentageList(refererCount, totalMetrics));
+        model.addAttribute("countryStats", metricsService.convertToPercentageList(countryCount, totalMetrics));
+        model.addAttribute("deviceStats", metricsService.convertToPercentageList(deviceCount, totalMetrics));
+        model.addAttribute("osStats", metricsService.convertToPercentageList(osCount, totalMetrics));
+        model.addAttribute("cityStats", metricsService.convertToPercentageList(cityCount, totalMetrics));
+        model.addAttribute("refererStats", metricsService.convertToPercentageList(refererCount, totalMetrics));
         model.addAttribute("timestamps", metrics.stream()
-                .map(UserMetric::getTimeStamp)
+                .map(MetricsDTO::getTimeStamp)
                 .sorted(Comparator.reverseOrder())
                 .collect(Collectors.toList()));
         model.addAttribute("user", user);
 
         return "metrics-detail";
-    }
-
-    private Map<String, Long> calculatePercentages(List<String> items) {
-        Map<String, Long> countMap = new HashMap<>();
-        for (String item : items) {
-            countMap.merge(item, 1L, Long::sum);
-        }
-        return countMap.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
-    }
-
-    private List<Map<String, Object>> convertToPercentageList(Map<String, Long> countMap, int total) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (Map.Entry<String, Long> entry : countMap.entrySet()) {
-            Map<String, Object> item = new HashMap<>();
-            double percentage = total > 0 ? (entry.getValue() * 100.0) / total : 0;
-            item.put("name", entry.getKey());
-            item.put("count", entry.getValue());
-            item.put("percentage", String.format("%.1f%%", percentage));
-            result.add(item);
-        }
-        return result;
     }
 }

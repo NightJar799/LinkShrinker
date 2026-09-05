@@ -25,22 +25,22 @@
         <table border="1" cellpadding="10" cellspacing="0">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Original URL</th>
                     <th>Short Link</th>
-                    <th>Actions</th>
+                    <th>View Metrics</th>
+                    <!-- <th>Actions</th> -->
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="link : ${links}">
-                    <td th:text="${link.id}">1</td>
+                    <!-- <td th:text="${link.id}">1</td> -->
                     <td>
                         <a th:href="${link.link}" target="_blank" th:text="${link.link}">original url</a>
                     </td>
                     <td th:text="${link.shortLink}">short</td>
                     <td>
                         <form th:action="@{/metrics/detail}" method="post" style="display: inline;">
-                            <input type="hidden" name="linkId" th:value="${link.id}">
+                            <input type="hidden" name="shortLink" th:value="${link.shortLink}">
                             <button type="submit">View Metrics</button>
                         </form>
                     </td>

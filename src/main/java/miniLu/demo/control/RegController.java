@@ -3,7 +3,6 @@ package miniLu.demo.control;
 import miniLu.demo.dto.RegisterDTO;
 import miniLu.demo.service.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,13 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class RegController {
 
-    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     private final UserService userService;
 
-    public RegController(UserService userService) {
+    public RegController(UserService userService, RedisTemplate<String, Object> redisTemplate) {
         this.userService = userService;
+        this.redisTemplate = redisTemplate;
     }
 
     @GetMapping("/reg")
@@ -43,7 +42,7 @@ public class RegController {
             return "registry";
         }
         redisTemplate.opsForList().leftPush("newUsers", registerDTO.getEmail());
-        System.out.println(userService.addUser(userService.map(registerDTO)));
+        System.out.println(userService.registerUser(registerDTO));
         log.debug("Попытка Регистрации успешна");
         return "redirect:/auth";
     }

@@ -1,39 +1,32 @@
-package miniLu.demo.entity;
+package miniLu.demo.dto;
 
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import miniLu.demo.entity.Link;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@Entity
-@Table(name = "users", schema = "mil")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
+@Builder
+public class UserDto implements UserDetails {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
-    
-    @Column(name = "password", nullable = false)
+
     private String password;
     
-    @Column(name = "name", nullable = false, length = 100)
     private String name;
     
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Link> links;
 
-    public User(String email, String password, String name) {
+    public UserDto(String email, String password, String name) {
         this.email = email;
         this.password = password;
         this.name = name;

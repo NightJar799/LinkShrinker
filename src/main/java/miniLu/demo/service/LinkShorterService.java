@@ -2,8 +2,9 @@ package miniLu.demo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import miniLu.demo.Repository.LinkRepository;
-import miniLu.demo.dto.Link;
-import miniLu.demo.entity.User;
+import miniLu.demo.Repository.UserRepository;
+import miniLu.demo.dto.LinkDTO;
+import miniLu.demo.dto.UserDto;
 
 import org.springframework.stereotype.Service;
 
@@ -12,20 +13,23 @@ import org.springframework.stereotype.Service;
 public class LinkShorterService {
 
     private final LinkRepository linkRepository;
+    private final UserRepository userRepository;
 
-    LinkShorterService(LinkRepository linkRepository){
+    LinkShorterService(LinkRepository linkRepository, UserRepository userRepository){
         this.linkRepository = linkRepository;
+        this.userRepository = userRepository;
     }
 
     private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int BASE = 62;
 
-    public Link ShortALink(Link link, User user) {
+    public LinkDTO ShortALink(LinkDTO link, String userEmail) {
         String link62 = into62BitLink(linkRepository.count());
         miniLu.demo.entity.Link newLink = new miniLu.demo.entity.Link();
+        Long userId = userRepository.findByEmail(userEmail).getId();
         newLink.setLink(link.getLink());
         newLink.setShortLink(link62);
-        newLink.setUserId(user.getId());
+        newLink.setUserId(userId);
         linkRepository.save(newLink);
 
         log.info("shortLink - " + newLink.getShortLink());

@@ -10,4 +10,5 @@ import java.util.List;
 public interface LinkRepository extends JpaRepository<Link, Long> {
     Optional<Link> findByShortLink(String shortLink);
     List<Link> findByUserId(Long userId);
+    List<Link> findByUserEmail(String email);
 }

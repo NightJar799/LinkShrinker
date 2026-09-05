@@ -2,7 +2,8 @@ package miniLu.demo.control;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import miniLu.demo.dto.Link;
+import miniLu.demo.dto.LinkDTO;
+import miniLu.demo.dto.UserDto;
 import miniLu.demo.entity.User;
 import miniLu.demo.service.AnalyticsBuffer;
 import miniLu.demo.service.LinkShorterService;
@@ -32,8 +33,8 @@ public class ShortingController {
     }
 
     @ModelAttribute("link")
-    public Link getLink() {
-        return new Link();
+    public LinkDTO getLink() {
+        return new LinkDTO();
     }
 
     @GetMapping()
@@ -47,17 +48,17 @@ public class ShortingController {
     }
 
     @PostMapping
-    public String useShortLink(@ModelAttribute Link link, 
+    public String useShortLink(@ModelAttribute LinkDTO link, 
                                Model model, 
                                @AuthenticationPrincipal User user) {
         log.info("Creating new short Link");
         log.info("Link - " + link.getLink());
         
-        if (user != null) {
+        if (user == null) {
             model.addAttribute("user", user);
         }
         
-        Link fullLink = linkShorterService.ShortALink(link, user);
+        LinkDTO fullLink = linkShorterService.ShortALink(link, user.getEmail());
         model.addAttribute("link", fullLink);
         return "index";
     }

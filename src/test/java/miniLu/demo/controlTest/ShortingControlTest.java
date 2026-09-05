@@ -1,6 +1,5 @@
 package miniLu.demo.controlTest;
 
-import miniLu.demo.dto.Link;
 import miniLu.demo.entity.User;
 import miniLu.demo.service.AnalyticsBuffer;
 import miniLu.demo.service.LinkShorterService;
@@ -13,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import miniLu.demo.control.ShortingController;
+import miniLu.demo.dto.LinkDTO;
+import miniLu.demo.dto.UserDto;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -56,14 +57,14 @@ class ShortingControlTest {
 
     @Test
     void useShortLink_ShouldCreateShortLinkAndReturnIndex() throws Exception {
-        Link inputLink = new Link();
+        LinkDTO inputLink = new LinkDTO();
         inputLink.setLink("https://www.example.com/very/long/url");
 
-        Link resultLink = new Link();
+        LinkDTO resultLink = new LinkDTO();
         resultLink.setLink("https://www.example.com/very/long/url");
         resultLink.setShortLink("abc12345");
 
-        when(linkShorterService.ShortALink(any(Link.class), any(User.class))).thenReturn(resultLink);
+        when(linkShorterService.ShortALink(any(LinkDTO.class), any(String.class))).thenReturn(resultLink);
 
         mockMvc.perform(post("/")
                         .flashAttr("link", inputLink)
